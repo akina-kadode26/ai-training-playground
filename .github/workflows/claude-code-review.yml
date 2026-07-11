@@ -35,10 +35,18 @@ jobs:
         id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
+          prompt: |
+            /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+
+            以下の観点を確認してください。
+
+            - ユーザー入力や外部入力に対するバリデーションが不足していないか
+            - 秘密情報、APIキー、トークン、パスワードなどがコードや設定に含まれていないか
+            - インジェクション、任意操作、意図しない情報参照などにつながる危険な実装がないか
+            - 認証・認可が必要な処理で、チェック漏れや権限管理の不備がないか
+            - 例外処理やエラーメッセージによって、内部情報や機密情報が漏れていないか
+            - セキュリティ上重要な異常系・境界値・権限エラーなどのテストが不足していないか
 
